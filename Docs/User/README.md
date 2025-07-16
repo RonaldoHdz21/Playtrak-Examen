@@ -4,50 +4,37 @@ This document should describe how the end user interacts with the web applicatio
 
 ## Overview
 
-> Provide a brief summary of what the web application does from the user's perspective.
-> 
-> Example:
-> A web interface that allows users to manage and review records through forms and tables.
+> Interfaz web que permite crear, modificar o eliminar clientes, además de gestionar el saldo con el que cuentan en sus membresias.
 
 ...
 
 ## Access and Navigation
 
-> Indicate how the user accesses the application and what sections are available.
-> 
-> Example:
-> The application is accessed via browser at `http://localhost:5000/`. Main sections include a dashboard, a form to manage entries, and a report view.
+> Se accede a la aplicación por medio del navegador web de su preferencia a traves de la ruta local https://localhost:44339/, se tendrá acceso a una vista general de todos los clientes activos con funciones disponibles como crear nuevos clientes, modificarlos, eliminarlos y recargar saldo a sus membresias.
 
 ...
 
 ## Functionalities
 
-> Describe the key features available in the interface.
-> 
-> Example:
-> - Create, edit, and delete items through a form
-> - View paginated and grouped lists of data
-> - Filter or search records by specific fields
+> - Crear, editar y eliminar elementos a través de un formulario
+> - Ver listas paginadas y agrupadas de datos
 
 ...
 
 ## Interface Behavior
 
-> Explain how the application responds to user actions.
-> 
-> Example:
-> - Validation messages appear when submitting incomplete forms
-> - Success or error alerts are shown after operations
-> - Table content updates dynamically after changes
+
+> - Se muestran alertas al ingresar datos incorrectos
+> - Se muestran alertas para confirmar que el usuario hará lo que realmente desea
+> - Se muestran alertas de confirmación y errores despues de las operaciones
+> - El contenido de la tabla se actualiza dinámicamente después de los cambios
+
 
 ...
 
 ## Limitations
 
-> Mention any known limitations, assumptions, or fixed values in the interface behavior.
-> 
-> Example:
-> - Only supports English language
-> - No authentication or user roles implemented
+> - No se implementaron autenticación ni roles de usuario
+
 
 ...

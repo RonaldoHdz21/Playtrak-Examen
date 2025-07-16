@@ -1,31 +1,424 @@
-﻿@{
-    ViewBag.Title = "Home Page";
+﻿@model List<ui.Models.Client>
+@{
+        ViewBag.Title = "Clients Page";
+        int currentPage = ViewBag.CurrentPage;
+        int totalPages = ViewBag.TotalPages;
+        List<ui.Models.TypeClient> typeClients = ViewBag.TypeClients;
 }
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+<div class="container">
+    <div class="row" style="margin-bottom:5px">
+        <div class="col">
+            <h2>Clientes</h2>
+        </div>
+        <div class="col" align="right">
+            <button type="button" class="btn btn-warning" title="Agregar cliente" onclick="openModalAddClient()" data-toggle="modal" data-target="#exampleModalCenter"><i class="bi bi-person-plus-fill"></i></button>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table table-bordered table-striped" id="tblClients">
+            <thead class="table-dark">
+                <tr>
+                    <th>Id</th>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                    <th>Email</th>
+                    <th>Fecha de Nacimiento</th>
+                    <th>Tipo</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="bodyTable">
+                @{
+                                        foreach (var itm in Model)
+                                        {
+                    <tr>
+                        <td>@itm.Id</td>
+                        <td>@itm.Name</td>
+                        <td>@itm.Telephone</td>
+                        <td>@itm.Email</td>
+                        <td>@itm.Birthdate.ToString("dd-MM-yyyy")</td>
+                        <td>@typeClients.Where(a => a.Id == itm.Type).FirstOrDefault().Description</td>
+                        <td align="center">
+                            <button class="btn btn-primary m-2" title="Recargar saldo" onclick="openModalBalance(@itm.Id, '@itm.Name')"><i class="bi bi-cash-stack"></i></button>
+                            <button class="btn btn-success m-2" title="Modificar" onclick="openModalUpdateClient(@itm.Id)"><i class="bi bi-pencil-square"></i></button>
+                            <button class="btn btn-danger m-2" title="Eliminar" onclick="deleteClient(@itm.Id , '@itm.Name')"><i class="bi bi-x-circle"></i></button>
+                        </td>
+                    </tr>
+                                        }
+                }
+            </tbody>
+        </table>
+    </div>
+    <nav aria-label="Page navigation" align="center">
+        <ul class="pagination justify-content-center">
+            @for (int i = 1; i <= totalPages; i++)
+                        {
+            <li class="page-item @(i == currentPage ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+            </li>
+                        }
+        </ul>
+    </nav>
 </div>
 
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header" align="center">
+                <h3 class="modal-title" id="exampleModalCenterTitle">Registrar cliente nuevo.</h3>
+                @*<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>*@
+            </div>
+            <div class="modal-body" align="center">
+                <div class="">
+                    <div class="form-group mr-3 ml-3">
+                        <label for="inputName">Nombre:</label>
+                        <input id="inputName" class="form-control" type="text" />
+                    </div>
+                    <div class="form-group">
+                        <label for="inputTelephone">Teléfono:</label>
+                        <input id="inputTelephone" class="form-control" type="tel" maxlength="10" />
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEmail">Correo:</label>
+                        <input id="inputEmail" class="form-control" type="email" />
+                    </div>
+                    <div class="form-group">
+                        <label for="inputBirthdate">Fecha de nacimiento:</label>
+                        <input id="inputBirthdate" class="form-control" type="date" />
+                    </div>
+                    <div class="form-group">
+                        <label for="selectTypeClient">Tipo de cliente:</label>
+                        <select id="selectTypeClient" class="form-control">
+                            @{
+                                                                foreach (ui.Models.TypeClient tc in typeClients)
+                                                                {
+                                <option value="@tc.Id">@tc.Description</option>
+                                                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" align="right">
+                <button id="btnSave" type="button" class="btn btn-primary" onclick="addClient()">Guardar</button>
+                <button id="btnModify" type="button" class="btn btn-primary" onclick="updateClient()" style="display:none;" disabled>Modificar</button>
+            </div>
+        </div>
     </div>
 </div>
+
+
+<div class="modal" tabindex="-1" role="dialog" id="modalBalance">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" align="center">
+            <div class="modal-header">
+                <h3 class="modal-title">Recargar saldo</h3>
+            </div>
+            <div class="modal-body">
+                <div >
+                    <div class="form-group">
+                        <label for="inputSaldoActual">Saldo actual:</label>
+                        <input id="inputBalance" class="form-control" readonly type="number"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputNewAmount">Cantidad a recargar:</label>
+                        <input id="inputNewAmount" type="number" class="form-control"/>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="updateBalance()">Recargar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+
+<script>
+    var idClientSelec = 0;
+    var idClientSelecBalance = 0;
+
+    function openModalAddClient() {
+        cleanModalClients();
+        enabledElement("btnSave");
+        disabledElement("btnModify");
+    }
+
+    async function addClient() {
+        Swal.fire({
+            title: "Confirmar registro.",
+            text: "¿Quieres guardar este cliente?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Si"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var nameInput = document.getElementById("inputName").value;
+                var telephoneInput = document.getElementById("inputTelephone").value;
+                var emailInput = document.getElementById("inputEmail").value;
+                var birthdateInput = document.getElementById("inputBirthdate").value;
+                var typeClientInput = document.getElementById("selectTypeClient").value;
+
+
+                fetch("/Home/AddClient", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ name: nameInput, telephone: telephoneInput, email: emailInput, birthdate: birthdateInput, typeClient: typeClientInput })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.Status === 200) {
+                            Swal.fire({
+                                title: "¡Cliente registrado con éxito!",
+                                text: "El cliente " + nameInput + " se ha registrado con éxito.",
+                                icon: "success"
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = "/Home/Index?page=1"
+                                }
+                            });
+
+
+                        }
+                        else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Cliente no registrado.",
+                                text: data.Message
+                            });
+                        }
+                    });
+            }
+        });
+
+    }
+
+    async function deleteClient(idClient, name) {
+        Swal.fire({
+            title: "Confirmar eliminación",
+            text: "¿Quieres eliminar al cliente " + name + "?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Si"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch("/Home/DeleteClient", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ id: idClient })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.Status === 200) {
+
+                            Swal.fire({
+                                title: "¡Cliente eliminado con éxito!",
+                                text: "El cliente " + name + " se ha eliminado con éxito.",
+                                icon: "success"
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = "/Home/Index?page=1"
+                                }
+                            });
+
+
+                        }
+                        else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Cliente no eliminado.",
+                                text: data.Message
+                            });
+                        }
+                    });
+            }
+        });
+
+    }
+
+    async function openModalUpdateClient(id) {
+        idClientSelec = id;
+        fetch("/Home/GetClientById", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ id: id })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.Status === 200) {
+
+                    const clientGetted = JSON.parse(data.Data);
+
+                    disabledElement("btnSave");
+                    enabledElement("btnModify")
+
+                    document.getElementById("inputName").value = clientGetted.Name;
+                    document.getElementById("inputTelephone").value = clientGetted.Telephone;
+                    document.getElementById("inputEmail").value = clientGetted.Email;
+                    document.getElementById("inputBirthdate").value = clientGetted.Birthdate.split('T')[0];
+                    document.getElementById("selectTypeClient").value = clientGetted.Type;
+
+                    $('#exampleModalCenter').modal('show');
+                }
+            });
+
+
+    }
+
+    async function updateClient() {
+        Swal.fire({
+            title: "Confirmar modificación.",
+            text: "¿Quieres modificar este cliente?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Si"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var nameInput = document.getElementById("inputName").value;
+                var telephoneInput = document.getElementById("inputTelephone").value;
+                var emailInput = document.getElementById("inputEmail").value;
+                var birthdateInput = document.getElementById("inputBirthdate").value;
+                var typeClientInput = document.getElementById("selectTypeClient").value;
+
+                fetch("/Home/UpdateClient", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ id: idClientSelec, name: nameInput, telephone: telephoneInput, email: emailInput, birthdate: birthdateInput, typeClient: typeClientInput })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.Status === 200) {
+                            Swal.fire({
+                                title: "¡Cliente modificado con éxito!",
+                                text: "El cliente " + nameInput + " se ha modificado con éxito.",
+                                icon: "success"
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = "/Home/Index?page=1"
+                                }
+                            });
+
+
+                        }
+                        else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Cliente no modificado.",
+                                text: data.Message
+                            });
+                        }
+                    });
+            }
+        });
+    }
+
+    async function openModalBalance(id, name) {
+        idClientSelecBalance = id;
+        fetch("/Home/GetBalanceById", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ id: id })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.Status === 200) {
+
+                    const balanceGetted = JSON.parse(data.Data);
+
+                    document.getElementById("inputBalance").value = balanceGetted.BalanceAmount;
+
+                    $('#modalBalance').modal('show');
+                }
+            });
+    }
+
+    async function updateBalance() {
+        Swal.fire({
+            title: "Confirmar recarga de saldo.",
+            text: "¿Quieres recargar el saldo a este cliente?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Si"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var newAmountInput = document.getElementById("inputNewAmount").value;
+
+                fetch("/Home/UpdateBalance", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ id: idClientSelecBalance, amount: newAmountInput })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const balanceUpdated = JSON.parse(data.Data);
+
+                        if (data.Status === 200) {
+                            Swal.fire({
+                                title: "¡Saldo recargado con éxito!",
+                                text: "Saldo actual $" + balanceUpdated.BalanceAmount + ".",
+                                icon: "success"
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = "/Home/Index?page=1"
+                                }
+                            });
+
+
+                        }
+                        else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Cliente no modificado.",
+                                text: data.Message
+                            });
+                        }
+                    });
+            }
+        });
+    }
+
+    function disabledElement(id) {
+        document.getElementById(id).style.display = "none";
+        document.getElementById(id).setAttribute("disabled", "");
+    }
+
+    function enabledElement(id) {
+        document.getElementById(id).style.removeProperty("display");
+        document.getElementById(id).removeAttribute("disabled");
+    }
+
+    function cleanModalClients() {
+        document.getElementById("inputName").value = "";
+        document.getElementById("inputTelephone").value = "";
+        document.getElementById("inputEmail").value = "";
+        document.getElementById("inputBirthdate").value = "";
+        document.getElementById("selectTypeClient").value = "";
+    }
+</script>
