@@ -4,47 +4,42 @@ This document should describe how the code is structured and how the developer i
 
 ## Project Layout
 
-> Describe how the code is organized into folders or layers and how responsibility is divided.
-> 
-> Example:
-> - `Controllers/`: HTTP endpoints and request handling
-> - `Models/`: Data transfer objects and entity definitions
-> - `Views/`: Razor or MVC views for rendering UI
-> - `Services/`: Application logic or helper utilities
+> API:
+> - `Controllers/`: Maneja los HTTP endpoints de la aplicación
+> - `Models/`: Entidades para las tablas de la base de datos
+> - `Services/`: Logica de la aplicación
+> - `Services/Implements`: Interfaces de implementación de los metodos de los servicios.
+> - `Data/`: Contiene el AppDbContext, que maneja la relacion de la base de datos con Entity Framework.
+	
+> UI:
+> - `Controllers/`: Maneja los HTTP endpoints de la aplicación
+> - `Models/`: Entidades para las tablas de la base de datos
+> - `Services/`: Logica de la aplicación
+> - `Services/Implements`: Interfaces de implementación de los metodos de los servicios.
+> - `Data/`: Contiene el AppDbContext, que maneja la relacion de la base de datos con Entity Framework.
+> - `Views/`: Vistas de Razor pages.
 
-...
+> Database:
+> - Todo se genera a través de Entity Framework, por lo que no fué necesario crear archivos.
+
 
 ## Expected Practices
 
-> Mention the minimum design expectations and how conventions or patterns are applied.
-> 
-> Example:
-> - Use MVC structure in the web project
-> - Use ORM for data access (e.g., Entity Framework Core)
-> - Apply design patterns where needed (e.g., Repository)
+> API:
+> - Arquitectura en capas
+> - Acceso a datos por Entity Framework
+	
+> UI:
+> - Arquitectura MVC
+> - Acceso a datos por medio de API
 
 ...
 
 ## Code Quality
 
-> Explain what standards are expected to ensure maintainability and clarity.
-> 
-> Example:
-> - No hardcoded values
-> - Use configuration files
-> - Consistent naming and scoping
-> - Proper logging
-> - Exceptions are handled appropriately
+> - Sin valores harcodeados
+> - Manejo de excepciones en acceso a datos
+> - Manejo de excepciones regulares en tiempo de ejecución
+> - Uso de archivos de configuración
+> - Uso de Linq para manejo de datos
 
-...
-
-## Clarity and Documentation
-
-> Indicate that the code should be self-explanatory and that supporting diagrams or summaries are encouraged if they improve understanding.
-> 
-> Example:
-> - Use comments for complex logic when needed
-> - UML diagrams are encouraged for non-trivial workflows
-> - All parts of the application must be easy to follow for a reviewer
-
-...
